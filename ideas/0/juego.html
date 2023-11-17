@@ -1,0 +1,42 @@
+<canvas id="canvas" width="1280" height="720"></canvas>
+<script>
+
+// APP
+class Canvas {
+	static cvs = document.querySelector("#canvas");
+	static ctx = Canvas.cvs.getContext("2d");
+
+	static cls(){
+		Canvas.ctx.fillStyle = "#000";
+		Canvas.ctx.fillRect(0,0,Canvas.cvs.width,Canvas.cvs.height);
+	}
+
+	static render(){
+		Canvas.cls();
+	}
+}
+
+class Main {
+	static update(){
+		Canvas.render();
+	}
+}
+
+// CSS
+let body = document.querySelectorAll("*");
+
+body.forEach(function(body) {
+	body.style.backgroundColor = "#f0f";
+	body.style.padding = 0;
+	body.style.margin = "auto";
+});
+
+Canvas.cvs.style.width = "100vw";
+Canvas.cvs.style.height = "100vh";
+
+// UPDATE
+setInterval(()=>{
+	Main.update();
+},10);
+
+</script>
