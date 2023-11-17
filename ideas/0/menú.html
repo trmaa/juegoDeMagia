@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas con Botones</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: consolas;
+            color: #fff;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .container {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            top: 200px;
+            left: 37.5vw;
+            width: 25vw;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            cursor: default;
+            padding: 50px;
+            position: relative;
+        }
+
+        .sun {
+            position: absolute;
+            top: 150px;
+            left: 50%;
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle, #f0f, #f00);
+            border-radius: 50%;
+            transform: translateX(-50%);
+        }
+
+        .pink-gradient {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, #f0f, #f00);
+            z-index: -1;
+        }
+
+        button {
+            border: none;
+            background: #0ffa;
+            margin: 0;
+            padding: 10px 20px;
+            color: #fff;
+            font-size: 16px;
+            transition: 200ms;
+            cursor:pointer;
+            width:100%;
+            height: 50px;
+        }
+        button:hover {
+            width:110%;
+            background: #0003;
+            border-radius: 50px;
+            border: 3px solid #f0f;
+        }
+    </style>
+</head>
+<body>
+    <div class="pink-gradient"></div>
+    <canvas id="myCanvas" width="1280" height="720"></canvas>
+    <div class="container">
+        <h1>CYBERMAGIC</h1>
+        <button onclick="boton1()">NEW</button>
+        <button onclick="boton2()">OPTIONS</button>
+        <button onclick="boton3()">QUIT</button>
+    </div>
+
+    <script>
+        let canvas = document.getElementById("myCanvas");
+        let ctx = canvas.getContext("2d");
+
+        class vec3 {
+            x = 0;
+            y = 0;
+            z = 0;
+            constructor(x, y, z) {
+                this.x = x;
+                this.y = y;
+                this.z = z;
+            }
+            add(p) {
+                this.x += p.x;
+                this.y += p.y;
+            }
+        }
+        class vec2 {
+            x = 0;
+            y = 0;
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+            }
+            add(p) {
+                this.x += p.x;
+                this.y += p.y;
+            }
+        }
+
+        function boton1() {
+            alert("Botón 1 presionado");
+        }
+        function boton2() {
+            alert("Botón 2 presionado");
+        }
+        function boton3() {
+            alert("Botón 3 presionado");
+        }
+
+        class Particle {
+            position = new vec3(0, 0, Math.random() * 1 + 1);
+            velocity = new vec2(0, 1);
+            angles = new vec2(0, 0);
+            color = "#0ff";
+            constructor(position, velocity, angles, color) {
+                this.position = position;
+                this.velocity = velocity;
+                this.angles = angles;
+                this.color = color;
+            }
+            move() {
+                this.velocity.x = Math.random() * 60 - 30;
+                this.velocity.y = Math.random() * 10;
+                this.position.add(this.velocity);
+            }
+        }
+
+        class Star extends Particle {
+            constructor(position, velocity, angles, color) {
+                super(position, velocity, angles, color);
+            }
+            move() {
+                // Stars don't move
+            }
+        }
+
+        let stars = [];
+
+        // Crear estrellas blancas en lugar de partículas regulares
+        for (let i = 0; i < 100; i++) {
+            stars[i] = new Star(
+                new vec3(Math.random() * canvas.width - canvas.width * 0.5, Math.random() * canvas.height + 100, Math.random() * 2 + 1),
+                new vec2(0, 0),
+                new vec2(0, 0),
+                "#fff"
+            );
+        }
+
+        let part = [];
+
+        setInterval(() => {
+            // Dibujar la parte negra del gradiente
+            ctx.fillStyle = "#000";
+            ctx.fillRect(0, 0, canvas.width, canvas.height * 0.5);
+
+            // Dibujar estrellas
+            for (let i = 0; i < stars.length; i++) {
+                ctx.fillStyle = stars[i].color;
+                ctx.fillRect(
+                    stars[i].position.x / stars[i].position.z + canvas.width * 0.5,
+                    canvas.height - stars[i].position.y / stars[i].position.z,
+                    3 / stars[i].position.z,
+                    3 / stars[i].position.z
+                );
+            }
+
+            // Dibujar el sol
+            ctx.fillStyle = "#fff"; // Color del sol
+            ctx.beginPath();
+            ctx.arc(canvas.width * 0.5, 150, 25, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.closePath();
+
+            // Dibujar la parte azul y rosa del gradiente
+            let gradient = ctx.createLinearGradient(0, canvas.height * 0.5, 0, canvas.height);
+            gradient.addColorStop(0, "#000"); // Color inicial (azul oscuro)
+            gradient.addColorStop(0.5, "#022");
+            gradient.addColorStop(1, "#f0f"); // Color final (rosa)
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, canvas.height * 0.5, canvas.width, canvas.height * 0.5);
+
+            ctx.fillStyle = "#f0f";
+            ctx.fillRect(200, 200, 15, canvas.height);
+            ctx.fillRect(400, 100, 20, canvas.height);
+            ctx.fillRect(1100, 300, 10, canvas.height);
+
+            // Crear y dibujar partículas
+            part[part.length] = new Particle(
+                new vec3(0, 0, Math.random() * 1 + 1),
+                new vec2(0, 1),
+                new vec2(0, 0),
+                `rgb(0,${Math.random() * 255},255)`
+            );
+
+            for (let i = 0; i < part.length; i++) {
+                if (part[i].position.y < canvas.height * 1.5) {
+                    part[i].move();
+                    ctx.fillStyle = part[i].color;
+                    ctx.fillRect(
+                        part[i].position.x / part[i].position.z + canvas.width * 0.5,
+                        canvas.height - part[i].position.y / part[i].position.z,
+                        10 / part[i].position.z,
+                        10 / part[i].position.z
+                    );
+                }
+            }
+        }, 10);
+    </script>
+</body>
+</html>
