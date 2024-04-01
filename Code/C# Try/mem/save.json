@@ -1,0 +1,15 @@
+{
+	"name":"",
+	"kills":0,
+	"habilities":{
+		"sword":{
+			"damage":0.1, //% of kill
+			"cooldown":0.1 //seconds
+		},
+		"arrow":{
+			"damage":0.3,
+			"cooldown":1
+		}
+	},
+	"room":0
+}
