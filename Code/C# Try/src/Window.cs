@@ -1,21 +1,29 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Threading.Tasks;
 
 public class Window : Form {
-    private const int VirtualWidth = 192*3;
-    private const int VirtualHeight = 108*3;
-    private float scaleX;
-    private float scaleY;
+    public vec2 viewport;
+    public vec2 aspectratio;
+
+    public vec2 scale = new vec2(0,0);
+
+    private readonly object graphicsLock = new object();
+    private SolidBrush brush = new SolidBrush(Color.Black);
 
     public Window(String title, vec2 size){
         this.Text = title;
+        this.Size = new Size((int)size.x, (int)size.y);
 
         this.FormBorderStyle = FormBorderStyle.None;
         this.WindowState = FormWindowState.Maximized;
 
-        this.scaleX = (float)Screen.PrimaryScreen.Bounds.Width / VirtualWidth;
-        this.scaleY = (float)Screen.PrimaryScreen.Bounds.Height / VirtualHeight;
+        this.scale.x = (float)Screen.PrimaryScreen.Bounds.Width / size.x;
+        this.scale.y = (float)Screen.PrimaryScreen.Bounds.Height / size.y;
+
+        this.viewport = size;
+        this.aspectratio = new vec2(this.ClientSize.Width, this.ClientSize.Height) / this.viewport;
 
         this.Paint += (sender, e) => repaint(e.Graphics);
 
@@ -23,18 +31,19 @@ public class Window : Form {
     }
 
     public void print(Graphics g, Color col, vec2 p, vec2 size){
-        using (SolidBrush brush = new SolidBrush(col)) {
-            g.FillRectangle(brush, p.x * scaleX, p.y * scaleY, size.x * scaleX, size.y * scaleY);
+        lock (brush) {
+            brush.Color = col;
+            g.FillRectangle(brush, (p.x-1)*this.scale.x, (p.y-1)*this.scale.y, size.x*this.scale.x, size.y*this.scale.y);
         }
     }
 
     public void println(Graphics g, vec2 pointo, vec2 pointf, float thich, Color color){
-        using (Pen pen = new Pen(color, thich)) {
-            g.DrawLine(pen, pointo.x * scaleX, pointo.y * scaleY, pointf.x * scaleX, pointf.y * scaleY);
-        }
+        Pen pen = new Pen(color, thich);
+        g.DrawLine(pen, (int)(pointo.x)*this.scale.x, (int)(pointo.y)*this.scale.y, (int)(pointf.x)*this.scale.x, (int)(pointf.y)*this.scale.y);
     }
 
-    private void repaint(Graphics g) {
-        this.print(g, Color.FromArgb(255, 0, 0, 0), new vec2(0, 0), new vec2(64, 64));
+    public void repaint(Graphics g) {
+        vec2 size = new vec2(this.ClientSize.Width, this.ClientSize.Height);
+        this.aspectratio = size / this.viewport;
     }
 }
