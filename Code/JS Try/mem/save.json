@@ -1,15 +1,26 @@
 {
-	"name":"",
-	"kills":0,
-	"habilities":{
-		"sword":{
-			"damage":0.1, //% of kill
-			"cooldown":0.1 //seconds
+	"name": "",
+	"kills": 0,
+	"illness": 0,
+	"habilities": {
+		"hit": {
+			"name":"hit",
+			"key": "click",
+			"damage": 0.1,
+			"cooldown": 100
 		},
-		"arrow":{
-			"damage":0.3,
-			"cooldown":1
+		"arrow": {
+			"name":"arrow",
+			"key": "q",
+			"damage": 0.3,
+			"cooldown": 1000
+		},
+		"roll": {
+			"name":"roll",
+			"key": "space",
+			"damage": 0,
+			"cooldown": 1000
 		}
 	},
-	"room":0
+	"room": 0
 }
